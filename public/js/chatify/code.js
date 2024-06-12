@@ -442,83 +442,95 @@ function IDinfo(id) {
  * Send message function
  *-------------------------------------------------------------
  */
-function sendMessage() {
+ function sendMessage() {
   temporaryMsgId += 1;
   let tempID = `temp_${temporaryMsgId}`;
   let hasFile = !!$(".upload-attachment").val();
   const inputValue = $.trim(messageInput.val());
+
   if (inputValue.length > 0 || hasFile) {
-    const formData = new FormData($("#message-form")[0]);
-    formData.append("id", getMessengerId());
-    formData.append("temporaryMsgId", tempID);
-    formData.append("_token", csrfToken);
-    $.ajax({
-      url: $("#message-form").attr("action"),
-      method: "POST",
-      data: formData,
-      dataType: "JSON",
-      processData: false,
-      contentType: false,
-      beforeSend: () => {
-        // remove message hint
-        $(".messages").find(".message-hint").hide();
-        // append a temporary message card
-        if (hasFile) {
-          messagesContainer
-            .find(".messages")
-            .append(
-              sendTempMessageCard(
-                inputValue + "\n" + loadingSVG("28px"),
-                tempID
-              )
-            );
-        } else {
-          messagesContainer
-            .find(".messages")
-            .append(sendTempMessageCard(inputValue, tempID));
-        }
-        // scroll to bottom
-        scrollToBottom(messagesContainer);
-        messageInput.css({ height: "42px" });
-        // form reset and focus
-        $("#message-form").trigger("reset");
-        cancelAttachment();
-        messageInput.focus();
-      },
-      success: (data) => {
-        if (data.error > 0) {
-          // message card error status
-          errorMessageCard(tempID);
-          console.error(data.error_msg);
-        } else {
-          // update contact item
-          updateContactItem(getMessengerId());
-          // temporary message card
-          const tempMsgCardElement = messagesContainer.find(
-            `.message-card[data-id=${data.tempID}]`
-          );
-          // add the message card coming from the server before the temp-card
-          tempMsgCardElement.before(data.message);
-          // then, remove the temporary message card
-          tempMsgCardElement.remove();
-          // scroll to bottom
-          scrollToBottom(messagesContainer);
-          // send contact item updates
-          sendContactItemUpdates(true);
-        }
-      },
-      error: () => {
-        // message card error status
-        errorMessageCard(tempID);
-        // error log
-        console.error(
-          "Failed sending the message! Please, check your server response."
-        );
-      },
-    });
+      const formData = new FormData($("#message-form")[0]);
+      formData.append("id", getMessengerId());
+      formData.append("temporaryMsgId", tempID);
+      formData.append("_token", csrfToken);
+
+      $.ajax({
+          url: $("#message-form").attr("action"),
+          method: "POST",
+          data: formData,
+          dataType: "JSON",
+          processData: false,
+          contentType: false,
+          beforeSend: () => {
+              $(".messages").find(".message-hint").hide();
+
+              if (hasFile) {
+                  messagesContainer
+                      .find(".messages")
+                      .append(
+                          sendTempMessageCard(
+                              inputValue + "\n" + loadingSVG("28px"),
+                              tempID
+                          )
+                      );
+              } else {
+                  messagesContainer
+                      .find(".messages")
+                      .append(sendTempMessageCard(inputValue, tempID));
+              }
+
+              scrollToBottom(messagesContainer);
+              messageInput.css({ height: "42px" });
+              $("#message-form").trigger("reset");
+              cancelAttachment();
+              messageInput.focus();
+          },
+          success: (data) => {
+              if (data.error > 0) {
+                  errorMessageCard(tempID);
+                  console.error(data.error_msg);
+              } else {
+                  updateContactItem(getMessengerId());
+                  const tempMsgCardElement = messagesContainer.find(
+                      `.message-card[data-id=${data.tempID}]`
+                  );
+                  tempMsgCardElement.before(data.message);
+                  tempMsgCardElement.remove();
+                  scrollToBottom(messagesContainer);
+                  sendContactItemUpdates(true);
+
+                  // Send message to Botman
+                  $.ajax({
+                    type: 'POST',
+                    url: '/chatify/botman',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        message: inputValue,
+                        sender_id: getMessengerId(),
+                        _token: csrfToken
+                    }),
+                    success: function(response) {
+                        console.log('Message sent to Botman');
+                        console.log(response);  // Log the response to verify
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error sending message to Botman:', error);
+                        console.log(xhr.responseText); // Log the full response text for debugging
+                    }
+                });                
+              }
+          },
+          error: () => {
+              errorMessageCard(tempID);
+              console.error(
+                  "Failed sending the message! Please, check your server response."
+              );
+          },
+      });
   }
   return false;
 }
+
 
 /**
  *-------------------------------------------------------------

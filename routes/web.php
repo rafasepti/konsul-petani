@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BotManController;
 use App\Models\Penyakit;
 use App\Models\Pertanyaan;
 use Illuminate\Support\Facades\Route;
@@ -21,6 +22,10 @@ Route::get('/', function () {
     // return view('welcome');
     return redirect('/login');
 });
+
+Route::post('/chatify/botman', [BotManController::class, 'handleChatifyMessage']);
+Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
+Route::get('/chat', [BotManController::class, 'index']);
 
 Route::get('/dashboard', function () {
     $total_admin = User::where('tipe','admin')->count();
