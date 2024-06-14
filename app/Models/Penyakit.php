@@ -19,6 +19,6 @@ class Penyakit extends Model
 
     public function penyakit_solusis()
     {
-        return $this->hasMany(PenyakitSolusi::class);
+        return $this->hasMany(PenyakitSolusi::class, 'id_penyakit');
     }
 }

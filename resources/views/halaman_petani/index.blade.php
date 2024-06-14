@@ -22,7 +22,7 @@
                         <h1 class="text-white pt-3 mt-3">Selamat Datang</h1>
                         <p class="lead text-white mt-1">Website ini membantu petani dalam mengelola dan mengoptimalkan hasil pertanian mereka. Konsultasikan dengan chatbot untuk mendapatkan saran dan solusi pertanian yang tepat.</p>
                         <div class="buttons">
-                            <a href="" id="open-botman-widget" class="btn btn-white mt-4">Chat Dengat Bot <i class="material-icons text-3xl">arrow_forward</i></a>
+                            <a href="" id="open-botman-widget" class="btn btn-white mt-4">Chat Dengan Bot <i class="material-icons text-3xl">arrow_forward</i></a>
                         </div>
                     </div>
                 </div>

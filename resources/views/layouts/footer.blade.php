@@ -29,7 +29,12 @@ aria-hidden="true">
         <div class="modal-body">Pilih "Keluar" di bawah jika Anda siap untuk mengakhiri sesi anda saat ini.</div>
         <div class="modal-footer">
             <button class="btn btn-secondary" type="button" data-dismiss="modal">Batal</button>
-            <a class="btn btn-primary" href="{{ route('logout') }}">Keluar</a>
+            <form action="{{ route('logout') }}" method="POST">
+              @csrf
+              <button type="submit" class="btn btn-primary">
+                Keluar
+              </button>
+            </form>
         </div>
     </div>
 </div>

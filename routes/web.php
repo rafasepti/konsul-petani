@@ -25,7 +25,7 @@ Route::get('/', function () {
 
 Route::get('/home', function () {
     return view('halaman_petani.index');
-});
+})->name('petani.home');
 
 Route::post('/chatify/botman', [BotManController::class, 'handleChatifyMessage']);
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
