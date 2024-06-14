@@ -10,5 +10,5 @@ class Pertanyaan extends Model
     // use HasFactory;
     protected $table = "pertanyaan";
     protected $primaryKey = 'id_pertanyaan';
-    protected $fillable = ['id_pertanyaan','pertanyaan','id_penyakit','id'];
+    protected $fillable = ['id_pertanyaan','jawaban','pertanyaan','id_penyakit','id'];
 }

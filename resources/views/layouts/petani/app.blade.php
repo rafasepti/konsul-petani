@@ -59,7 +59,7 @@
       var botmanWidget = {
           aboutText: 'Konsultasi Pertanian',
           title: 'Konsultasi Pertanian',
-          introMessage: "ChatBot Konsultasi Pertanian",
+          introMessage: "Halo! Apakah ada yang bisa dibantu?",
           mainColor: '#4CAF50', // Main color
           bubbleBackground: '#4CAF50', // Background color of the bubble
           headerTextColor: '#fff', // Text color of the header
