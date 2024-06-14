@@ -39,6 +39,7 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'tipe' => 'petani',
             'password' => Hash::make($request->password),
         ]);
 
@@ -46,6 +47,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        if(auth()->user()->tipe == 'admin'){
+            return redirect()->intended(RouteServiceProvider::HOME);
+        }else{
+            return redirect()->intended(route('petani.home'));
+        }
     }
 }
