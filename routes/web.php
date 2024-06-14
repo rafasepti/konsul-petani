@@ -19,8 +19,12 @@ use Illuminate\Support\Facades\DB;
 */
 
 Route::get('/', function () {
-    // return view('welcome');
+    //return view('halaman_petani.index');
     return redirect('/login');
+});
+
+Route::get('/home', function () {
+    return view('halaman_petani.index');
 });
 
 Route::post('/chatify/botman', [BotManController::class, 'handleChatifyMessage']);
