@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BotManController;
+use App\Http\Controllers\PertanyaanController;
 use App\Models\Penyakit;
 use App\Models\Pertanyaan;
 use Illuminate\Support\Facades\Route;
@@ -79,6 +80,7 @@ Route::post('/penyakitsolusi/update', 'App\Http\Controllers\PenyakitSolusiContro
 
 // untuk crud pertanyaan
 Route::get('/pertanyaan','App\Http\Controllers\PertanyaanController@index')->middleware(['auth', 'checkRole:admin'])->name('pertanyaan');
+Route::post('/pertanyaan/print',[PertanyaanController::class, 'print'])->middleware(['auth', 'checkRole:admin'])->name('pertanyaan.print');
 Route::get('/pertanyaan/create', 'App\Http\Controllers\PertanyaanController@create')->middleware(['auth', 'checkRole:admin']);
 Route::post('/pertanyaan/store', 'App\Http\Controllers\PertanyaanController@store')->middleware(['auth', 'checkRole:admin']);
 Route::get('/pertanyaan/destroy/{id}', '\App\Http\Controllers\PertanyaanController@destroy')->middleware(['auth', 'checkRole:admin']);

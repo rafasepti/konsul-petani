@@ -21,4 +21,9 @@ class Penyakit extends Model
     {
         return $this->hasMany(PenyakitSolusi::class, 'id_penyakit');
     }
+
+    public function pertanyaan()
+    {
+        return $this->hasMany(pertanyaan::class, 'id_penyakit');
+    }
 }

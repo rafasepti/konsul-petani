@@ -128,4 +128,22 @@ class PertanyaanController extends Controller
          $pertanyaan->delete();
          return redirect()->route('pertanyaan')->with('success','Data Berhasil di Hapus');
     }
+
+    public function print(Request $request){
+        $request->validate([
+            'tgl_awal' => 'required|date',
+            'tgl_akhir' => 'required|date|after_or_equal:tgl_awal',
+        ]);
+
+        $tgl_awal = $request->input('tgl_awal');
+        $tgl_akhir = $request->input('tgl_akhir');
+
+        $pertanyaan = Pertanyaan::with('penyakit', 'user')
+        ->whereBetween('updated_at', [$tgl_awal, date('Y-m-d', strtotime($tgl_akhir . ' +1 day'))])
+        ->get();
+
+        //dd($pertanyaan);
+
+        return view('pertanyaan.report', compact('pertanyaan' ,'tgl_awal', 'tgl_akhir'));
+    }
 }
