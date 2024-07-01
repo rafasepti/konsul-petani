@@ -7,6 +7,9 @@ use App\Models\PenyakitSolusi;
 use App\Models\Pertanyaan;
 use BotMan\BotMan\Messages\Conversations\Conversation;
 use BotMan\BotMan\Messages\Incoming\Answer;
+use BotMan\BotMan\Messages\Outgoing\Actions\Button;
+use BotMan\BotMan\Messages\Outgoing\Question;
+use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -39,17 +42,24 @@ class OnBoardingConversation extends Conversation
     }
     public function run()
     {
-        $this->ask('Apakah Anda ingin mencari definisi atau solusi? Ketik "definisi" atau "solusi"', function ($answer) {
+        $this->ask('Apakah Anda ingin mencari definisi atau solusi? Ketik "definisi" atau "solusi". Ketik "pakar" untuk mendapat nomer pakar ', function ($answer) {
             $choice = strtolower($answer->getText());
 
-            if ($choice == 'definisi') {
+            if ($choice == 'definisi' || $choice == 'Definisi') {
                 $this->askForDefinition();
-            } elseif ($choice == 'solusi') {
+            } elseif ($choice == 'solusi' || $choice == 'Solusi') {
                 $this->askForSolution();
+            } elseif ($choice == 'pakar' || $choice == 'Pakar') {
+                $this->sendLinkButton();
             } else {
-                $this->say('Pilihan tidak valid. Silakan ketik "definisi" atau "solusi".');
+                $this->say('Pilihan tidak valid. Silakan ketik "definisi", "solusi" atau "pakar".');
             }
         });
+    }
+
+    public function sendLinkButton()
+    {
+        $this->say('Link whatsapp: <a href="https://wa.link/0wrvo0" target="_blank">https://wa.link/0wrvo0</a>');
     }
 
     public function askForDefinition()
