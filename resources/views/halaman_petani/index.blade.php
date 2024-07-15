@@ -4,6 +4,7 @@
         .card-background-mask-success {
             cursor: pointer;
         }
+
         /* Custom styles for Botman Widget */
         .botman-widget {
             background-color: #f0f0f0;
@@ -40,77 +41,90 @@
     </header>
 @endsection
 @section('content')
-<section class="my-5 py-5">
-    <div class="container">
-        <div class="row align-items-center justify-content-center">
-            <div class="col-lg-4 p-lg-4 mt-lg-0 mt-4 text-center">
-                <div class="card card-rotate card-background card-background-mask-success shadow-success mt-md-0 mt-5" onclick="toggleTips()">
-                    <div class="front front-background"
-                        style="background-image: url(https://images.unsplash.com/photo-1569683795645-b62e50fbf103?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80); background-size: cover;">
-                        <div class="card-body py-7 text-center">
-                            <h3 class="text-white">Tata Cara <br />Bertani</h3>
-                            <p class="text-white opacity-8">Dapatkan tips dan panduan bertani yang efektif dan praktis
-                                untuk hasil panen yang optimal.</p>
+    <section class="my-5 py-5">
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+                <div class="col-lg-4 p-lg-4 mt-lg-0 mt-4 text-center">
+                    <div class="card card-rotate card-background card-background-mask-success shadow-success mt-md-0 mt-5">
+                        <div class="front front-background"
+                            style="background-image: url(https://images.unsplash.com/photo-1569683795645-b62e50fbf103?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80); background-size: cover;">
+                            <div class="card-body py-7 text-center">
+                                <h3 class="text-white">Panduan Pertanian</h3>
+                                <p class="text-white opacity-8">Pilih topik untuk mendapatkan tips dan panduan.</p>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <button class="btn btn-success mt-3" onclick="toggleTips('tips1')">Tata Cara
+                                            Bertani</button>
+                                        <button class="btn btn-success mt-3" onclick="toggleTips('tips2')">Cara Menanam</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button class="btn btn-success mt-3" onclick="toggleTips('tips3')">Perawatan
+                                            Tanaman</button>
+                                        <button class="btn btn-success mt-3" onclick="toggleTips('tips4')">Panen dan Pasca
+                                            Panen</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-6 mt-lg-0 mt-5 ps-lg-0 ps-0" id="tips" style="display: none;">
-                <div class="p-3 info-horizontal">
-                    <div class="icon icon-shape bg-gradient-success shadow-success text-center">
-                        <i class="fas fa-seedling opacity-10"></i>
+
+                <div class="col-lg-6 mt-lg-0 mt-5 ps-lg-0 ps-0" id="tips1" style="display: none;">
+                    <div class="p-3 info-horizontal">
+                        <div class="icon icon-shape bg-gradient-success shadow-success text-center">
+                            <i class="fas fa-seedling opacity-10"></i>
+                        </div>
+                        <div class="description ps-3">
+                            <p class="mb-0">Pilih lahan yang subur dan sesuai untuk jenis tanaman yang akan ditanam. <br>
+                                Bersihkan lahan dari gulma, batu, dan sisa tanaman, lalu lakukan pengolahan tanah (membajak
+                                atau mencangkul).</p>
+                        </div>
                     </div>
-                    <div class="description ps-3">
-                        <p class="mb-0">Pilih lahan yang subur dan sesuai untuk jenis tanaman yang akan ditanam. <br> 
-                            Bersihkan lahan dari gulma, batu, dan sisa tanaman, lalu lakukan pengolahan tanah (membajak atau mencangkul).</p>
-                    </div>
+                    <!-- Tambahkan lebih banyak informasi di sini jika diperlukan -->
                 </div>
 
-                <div class="p-3 info-horizontal">
-                    <div class="icon icon-shape bg-gradient-success shadow-success text-center">
-                        <i class="fas fa-seedling opacity-10"></i>
+                <div class="col-lg-6 mt-lg-0 mt-5 ps-lg-0 ps-0" id="tips2" style="display: none;">
+                    <div class="p-3 info-horizontal">
+                        <div class="icon icon-shape bg-gradient-success shadow-success text-center">
+                            <i class="fas fa-seedling opacity-10"></i>
+                        </div>
+                        <div class="description ps-3">
+                            <p class="mb-0">Pilih benih berkualitas yang sesuai dengan kondisi iklim dan jenis tanah. <br>
+                                Tanam benih atau bibit dengan jarak dan kedalaman yang sesuai.</p>
+                        </div>
                     </div>
-                    <div class="description ps-3">
-                        <p class="mb-0">Pilih benih berkualitas yang sesuai dengan kondisi iklim dan jenis tanah. <br>
-                            Tanam benih atau bibit dengan jarak dan kedalaman yang sesuai.</p>
-                    </div>
+                    <!-- Tambahkan lebih banyak informasi di sini jika diperlukan -->
                 </div>
-                <div class="p-3 info-horizontal">
-                    <div class="icon icon-shape bg-gradient-success shadow-success text-center">
-                        <i class="fas fa-seedling opacity-10"></i>
+
+                <div class="col-lg-6 mt-lg-0 mt-5 ps-lg-0 ps-0" id="tips3" style="display: none;">
+                    <div class="p-3 info-horizontal">
+                        <div class="icon icon-shape bg-gradient-success shadow-success text-center">
+                            <i class="fas fa-seedling opacity-10"></i>
+                        </div>
+                        <div class="description ps-3">
+                            <p class="mb-0">Lakukan penyiraman secara rutin.<br>
+                                Berikan pupuk sesuai kebutuhan tanaman. <br>
+                                Kendalikan hama dan penyakit secara efektif.</p>
+                        </div>
                     </div>
-                    <div class="description ps-3">
-                        <p class="mb-0">Lakukan penyiraman secara rutin.<br> 
-                            Berikan pupuk sesuai kebutuhan tanaman. <br>
-                            Kendalikan hama dan penyakit secara efektif.
-                        </p>
-                    </div>
+                    <!-- Tambahkan lebih banyak informasi di sini jika diperlukan -->
                 </div>
-                <div class="p-3 info-horizontal">
-                    <div class="icon icon-shape bg-gradient-success shadow-success text-center">
-                        <i class="fas fa-seedling opacity-10"></i>
+
+                <div class="col-lg-6 mt-lg-0 mt-5 ps-lg-0 ps-0" id="tips4" style="display: none;">
+                    <div class="p-3 info-horizontal">
+                        <div class="icon icon-shape bg-gradient-success shadow-success text-center">
+                            <i class="fas fa-seedling opacity-10"></i>
+                        </div>
+                        <div class="description ps-3">
+                            <p class="mb-0">Panen tanaman pada waktu yang tepat untuk hasil optimal. <br>
+                                Bersihkan hasil panen dan simpan atau olah dengan cara yang tepat sebelum pemasaran.</p>
+                        </div>
                     </div>
-                    <div class="description ps-3">
-                        <p class="mb-0">Pantau pertumbuhan tanaman dan segera tangani jika ada tanda serangan hama atau penyakit.<br> 
-                            Lakukan penyiangan untuk mengendalikan gulma yang mengganggu.
-                        </p>
-                    </div>
-                </div>
-                <div class="p-3 info-horizontal">
-                    <div class="icon icon-shape bg-gradient-success shadow-success text-center">
-                        <i class="fas fa-seedling opacity-10"></i>
-                    </div>
-                    <div class="description ps-3">
-                        <p class="mb-0">Panen tanaman pada waktu yang tepat untuk hasil optimal. <br>
-                            Bersihkan hasil panen dan simpan atau olah dengan cara yang tepat sebelum pemasaran.
-                        </p>
-                    </div>
+                    <!-- Tambahkan lebih banyak informasi di sini jika diperlukan -->
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
+    </section>
 @endsection
 @section('script')
     <script>
@@ -119,13 +133,18 @@
             window.botmanChatWidget.open();
         });
 
-        function toggleTips() {
-            var tips = document.getElementById("tips");
-            if (tips.style.display === "none") {
-                tips.style.display = "block";
-            } else {
-                tips.style.display = "none";
-            }
+        function toggleTips(tipsId) {
+            var tipsSections = ['tips1', 'tips2', 'tips3', 'tips4'];
+
+            tipsSections.forEach(function(section) {
+                var element = document.getElementById(section);
+                if (section === tipsId) {
+                    element.style.display = (element.style.display === "none" || element.style.display === "") ?
+                        "block" : "none";
+                } else {
+                    element.style.display = "none";
+                }
+            });
         }
     </script>
 @endsection

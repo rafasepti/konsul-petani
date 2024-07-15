@@ -12,6 +12,7 @@ use BotMan\BotMan\Messages\Outgoing\Question;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class OnBoardingConversation extends Conversation
 {
@@ -45,22 +46,22 @@ class OnBoardingConversation extends Conversation
 
     public function askFirstname()
     {
-        $this->ask('Hello! What is your firstname?', function(Answer $answer) {
+        $this->ask('Hello! What is your firstname?', function (Answer $answer) {
             // Save result
             $this->firstname = $answer->getText();
 
-            $this->say('Nice to meet you '.$this->firstname);
+            $this->say('Nice to meet you ' . $this->firstname);
             $this->askEmail();
         });
     }
 
     public function askEmail()
     {
-        $this->ask('One more thing - what is your email?', function(Answer $answer) {
+        $this->ask('One more thing - what is your email?', function (Answer $answer) {
             // Save result
             $this->email = $answer->getText();
 
-            $this->say('Great - that is all we need, '.$this->firstname);
+            $this->say('Great - that is all we need, ' . $this->firstname);
             $this->askFirstname();
         });
     }
@@ -88,69 +89,158 @@ class OnBoardingConversation extends Conversation
 
     public function giveDefinition($definisi)
     {
-        // Pisahkan input menjadi kata-kata terpisah
-        $keywords = explode(' ', $definisi);
-    
-        // Cari setiap kata dalam database
+        // Define common words to ignore
+        $commonWords = ['apa', 'penyakit', 'definisi', 'sebutkan', 'padi'];
+
+        // Convert to lowercase and trim whitespace
+        $definisi = strtolower(trim($definisi));
+        Log::info("Processed input: " . $definisi);
+
+        // Remove common words from the input
+        $keywords = array_diff(explode(' ', $definisi), $commonWords);
+        Log::info("Keywords after removing common words: " . implode(', ', $keywords));
+
+        // Reconstruct the query string without common words
+        $queryPhrase = implode(' ', $keywords);
+        Log::info("Query phrase: " . $queryPhrase);
+
+        // Attempt exact phrase match first
+        $penyakit = Penyakit::whereRaw('LOWER(nama_penyakit) like ?', ['%' . strtolower($queryPhrase) . '%'])->first();
+        Log::info("Exact match found: " . ($penyakit ? 'Yes' : 'No'));
+
+        if ($penyakit) {
+            $question = $this->type . ' ' . $penyakit->nama_penyakit;
+            $response = 'Definisi ' . $penyakit->nama_penyakit . ': ' . $penyakit->definisi;
+            $this->say($response);
+            $this->store($response, $question, $penyakit->id_penyakit);
+            return;
+        }
+
+        // If no exact match, fallback to keyword search
         foreach ($keywords as $keyword) {
-            $penyakit = Penyakit::where('nama_penyakit', 'like', '%' . $keyword . '%')->first();
+            if (empty($keyword)) continue; // Skip empty keywords
+            Log::info("Checking keyword: " . $keyword);
+            $penyakit = Penyakit::whereRaw('LOWER(nama_penyakit) like ?', ['%' . strtolower($keyword) . '%'])->first();
+            Log::info("Match found for keyword '$keyword': " . ($penyakit ? 'Yes' : 'No'));
+
             if ($penyakit) {
-                $question = $this->type.' '. $penyakit->nama_penyakit;
+                $question = $this->type . ' ' . $penyakit->nama_penyakit;
                 $response = 'Definisi ' . $penyakit->nama_penyakit . ': ' . $penyakit->definisi;
                 $this->say($response);
                 $this->store($response, $question, $penyakit->id_penyakit);
                 return;
             }
         }
-    
-        // Jika tidak ditemukan
+
+        // If no match found
         $this->say('Maaf, definisi untuk penyakit tersebut tidak ditemukan.');
     }
 
     public function giveSolution($solusi)
     {
-        $keywords = explode(' ', $solusi);
+        // Define common words to ignore
+        $commonWords = ['apa', 'penyakit', 'solusi', 'sebutkan', 'padi'];
 
-        // Cari setiap kata dalam database
+        // Convert to lowercase and trim whitespace
+        $solusi = strtolower(trim($solusi));
+        Log::info("Processed input: " . $solusi);
+
+        // Remove common words from the input
+        $keywords = array_diff(explode(' ', $solusi), $commonWords);
+        Log::info("Keywords after removing common words: " . implode(', ', $keywords));
+
+        // Reconstruct the query string without common words
+        $queryPhrase = implode(' ', $keywords);
+        Log::info("Query phrase: " . $queryPhrase);
+
+        // Attempt exact phrase match first
+        $penyakitSolusi = PenyakitSolusi::whereHas('penyakit', function ($q) use ($queryPhrase) {
+            $q->whereRaw('LOWER(nama_penyakit) like ?', ['%' . strtolower($queryPhrase) . '%']);
+        })->first();
+        Log::info("Exact match found: " . ($penyakitSolusi ? 'Yes' : 'No'));
+
+        if ($penyakitSolusi) {
+            $question = $this->type . ' ' . $penyakitSolusi->penyakit->nama_penyakit;
+            $response = 'Solusi untuk ' . $penyakitSolusi->penyakit->nama_penyakit . ': ' . $penyakitSolusi->solusi;
+            $this->say($response);
+            $this->store($response, $question, $penyakitSolusi->id_penyakit);
+            return;
+        }
+
+        // If no exact match, fallback to keyword search
         foreach ($keywords as $keyword) {
-            $penyakitSolusi = PenyakitSolusi::whereHas('penyakit', function ($query) use ($keyword, $solusi) {
-                $query->where('nama_penyakit', 'like', '%' . $keyword . '%');
+            if (empty($keyword)) continue; // Skip empty keywords
+            Log::info("Checking keyword: " . $keyword);
+            $penyakitSolusi = PenyakitSolusi::whereHas('penyakit', function ($q) use ($keyword) {
+                $q->whereRaw('LOWER(nama_penyakit) like ?', ['%' . strtolower($keyword) . '%']);
             })->first();
+            Log::info("Match found for keyword '$keyword': " . ($penyakitSolusi ? 'Yes' : 'No'));
+
             if ($penyakitSolusi) {
-                $question = $this->type.' '. $penyakitSolusi->penyakit->nama_penyakit;
+                $question = $this->type . ' ' . $penyakitSolusi->penyakit->nama_penyakit;
                 $response = 'Solusi untuk ' . $penyakitSolusi->penyakit->nama_penyakit . ': ' . $penyakitSolusi->solusi;
                 $this->say($response);
                 $this->store($response, $question, $penyakitSolusi->id_penyakit);
-                return; // Keluar setelah menemukan definisi
+                return;
             }
         }
 
-        // Jika tidak ditemukan
+        // If no match found
         $this->say('Maaf, solusi untuk penyakit tersebut tidak ditemukan.');
     }
 
+
     public function giveGejala($gejala)
     {
-        // Pisahkan input menjadi kata-kata terpisah
-        $keywords = explode(' ', $gejala);
-    
-        // Cari setiap kata dalam database
+        // Define common words to ignore
+        $commonWords = ['apa', 'penyakit', 'gejala', 'sebutkan', 'padi'];
+
+        // Convert to lowercase and trim whitespace
+        $gejala = strtolower(trim($gejala));
+        Log::info("Processed input: " . $gejala);
+
+        // Remove common words from the input
+        $keywords = array_diff(explode(' ', $gejala), $commonWords);
+        Log::info("Keywords after removing common words: " . implode(', ', $keywords));
+
+        // Reconstruct the query string without common words
+        $queryPhrase = implode(' ', $keywords);
+        Log::info("Query phrase: " . $queryPhrase);
+
+        // Attempt exact phrase match first
+        $penyakit = Penyakit::whereRaw('LOWER(nama_penyakit) like ?', ['%' . strtolower($queryPhrase) . '%'])->first();
+        Log::info("Exact match found: " . ($penyakit ? 'Yes' : 'No'));
+
+        if ($penyakit) {
+            $question = $this->type . ' ' . $penyakit->nama_penyakit;
+            $response = 'Gejala ' . $penyakit->nama_penyakit . ': ' . $penyakit->gejala;
+            $this->say($response);
+            $this->store($response, $question, $penyakit->id_penyakit);
+            return;
+        }
+
+        // If no exact match, fallback to keyword search
         foreach ($keywords as $keyword) {
-            $penyakit = Penyakit::where('nama_penyakit', 'like', '%' . $keyword . '%')->first();
+            if (empty($keyword)) continue; // Skip empty keywords
+            Log::info("Checking keyword: " . $keyword);
+            $penyakit = Penyakit::whereRaw('LOWER(nama_penyakit) like ?', ['%' . strtolower($keyword) . '%'])->first();
+            Log::info("Match found for keyword '$keyword': " . ($penyakit ? 'Yes' : 'No'));
+
             if ($penyakit) {
-                $question = $this->type.' '. $penyakit->nama_penyakit;
-                $response = 'Gejala ' . $penyakit->nama_penyakit . ': ' . $penyakit->gejala;
+                $question = $this->type . ' ' . $penyakit->nama_penyakit;
+                $response = 'Gejala ' . $penyakit->nama_penyakit . ': ' . $penyakit->gejala ;
                 $this->say($response);
                 $this->store($response, $question, $penyakit->id_penyakit);
                 return;
             }
         }
-    
-        // Jika tidak ditemukan
+
+        // If no match found
         $this->say('Maaf, gejala untuk penyakit tersebut tidak ditemukan.');
     }
 
-    public function store($answer, $question, $id_penyakit){
+    public function store($answer, $question, $id_penyakit)
+    {
         DB::table('pertanyaan')->insert([
             'pertanyaan' => $question,
             'jawaban' => $answer,

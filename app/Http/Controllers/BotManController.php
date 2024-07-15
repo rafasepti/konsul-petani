@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Conversations\OnBoardingConversation;
-use App\Models\Penyakit;
-use App\Models\PenyakitSolusi;
 use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
@@ -36,32 +34,20 @@ class BotManController extends Controller
 
     public function handleMessage($botman, $message)
     {
-        if (stripos($message, 'solusi') !== false) {
+        $lowercaseMessage = strtolower($message);
+        if (stripos($lowercaseMessage, 'solusi') !== false) {
             $solusi = str_replace('solusi', '', $message);
             $botman->startConversation(new \App\Http\Conversations\OnBoardingConversation('solusi', trim($solusi)));
-        } elseif (stripos($message, 'definisi') !== false) {
+        } elseif (stripos($lowercaseMessage, 'definisi') !== false) {
             $definisi = str_replace('definisi', '', $message);
             $botman->startConversation(new \App\Http\Conversations\OnBoardingConversation('definisi', trim($definisi)));
-        } elseif (stripos($message, 'gejala') !== false) {
+        } elseif (stripos($lowercaseMessage, 'gejala') !== false) {
             $gejala = str_replace('gejala', '', $message);
             $botman->startConversation(new \App\Http\Conversations\OnBoardingConversation('gejala', trim($gejala)));
-        } elseif (stripos($message, 'pakar') !== false) {
+        } elseif (stripos($lowercaseMessage, 'pakar') !== false) {
             $botman->startConversation(new \App\Http\Conversations\OnBoardingConversation('pakar'));
         } else {
-            $botman->startConversation(new \App\Http\Conversations\OnBoardingConversation());
+            $botman->reply('Maaf, data tidak ditemukan. Silakan tanya yang lain.');
         }
-    }
-
-    /**
-     * Place your BotMan logic here.
-     */
-    public function askName($botman)
-    {
-        $botman->ask('Hello! Siapa Nama anda?', function (Answer $answer) {
-
-            $name = $answer->getText();
-
-            $this->say('Salam Kenal ' . $name);
-        });
     }
 }
