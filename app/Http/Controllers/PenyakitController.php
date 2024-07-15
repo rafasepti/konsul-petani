@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Penyakit;
-use App\Models\Gejala;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -18,7 +17,7 @@ class PenyakitController extends Controller
     {
         // $penyakit = Penyakit::all();
          // $produk = Produk::with('kategori')->get();
-         $sql = "SELECT * FROM penyakit INNER JOIN gejala WHERE penyakit.id_gejala = gejala.id_gejala";
+         $sql = "SELECT * FROM penyakit";
          $penyakit = DB::select($sql);
 
         // dd($penyakit);
@@ -34,8 +33,7 @@ class PenyakitController extends Controller
      */
     public function create()
     {
-        $gejala = Gejala::all();
-        return view('penyakit/create',['gejala' => $gejala]);
+        return view('penyakit/create');
     }
 
     /**
@@ -47,14 +45,21 @@ class PenyakitController extends Controller
     public function store(Request $request)
     {
         //digunakan untuk validasi kemudian kalau ok tidak ada masalah baru disimpan ke db
+        //dd($request->all());
         $validated = $request->validate([
-            'id_gejala' => 'required',
+            'gejala' => 'required',
             'nama_penyakit' => 'required',
             'definisi' => 'required',
         ]);
 
         // masukkan ke db
-        Penyakit::create($request->all());
+        $penyakit = Penyakit::create([
+            'gejala' => $request->gejala,
+            'nama_penyakit' => $request->nama_penyakit,
+            'definisi' => $request->definisi,
+        ]);
+
+        //dd($penyakit);
         
         return redirect()->route('penyakit')->with('success','Data Berhasil di Input');
     }
@@ -79,8 +84,7 @@ class PenyakitController extends Controller
     public function edit($id)
     {
         $penyakit = Penyakit::where('id_penyakit', $id)->first();
-        $gejala = Gejala::all();
-        $sql = "SELECT * FROM gejala INNER JOIN penyakit WHERE penyakit.id_penyakit = $id LIMIT 1";
+        $sql = "SELECT * FROM penyakit";
         $gejala_cek = DB::select($sql);
 
         // dd($gejala[0]->nama_gejala);
@@ -89,7 +93,6 @@ class PenyakitController extends Controller
         [
             'penyakit' => $penyakit,
             'gejala_cek' => $gejala_cek,
-            'gejala' => $gejala
         ]);
     }
 
@@ -107,13 +110,13 @@ class PenyakitController extends Controller
         $penyakit = Penyakit::find($request->input('id_penyakit'));
         $penyakit->nama_penyakit = $request->input('nama_penyakit');
         $penyakit->definisi = $request->input('definisi');
-        $penyakit->id_gejala = $request->input('id_gejala');
+        $penyakit->gejala = $request->input('gejala');
 
         //digunakan untuk validasi kemudian kalau ok tidak ada masalah baru diupdate ke db
         $validated = $request->validate([
-            'nama_gejala' => 'required',
+            'gejala' => 'required',
             'definisi' => 'required',
-            'id_gejala' => 'required',
+            'nama_penyakit' => 'required',
         ]);
 
         // update ke db

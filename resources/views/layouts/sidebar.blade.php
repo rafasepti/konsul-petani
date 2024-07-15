@@ -62,14 +62,14 @@
               </p>
             </a>
           </li>
-          <li class="nav-item">
+          {{-- <li class="nav-item">
             <a href="{{ url('gejala') }}" class="nav-link">
               <i class="nav-icon fas fa-columns text-light"></i>
               <p class="text-light">
                 Data Gejala
               </p>
             </a>
-          </li>
+          </li> --}}
           <li class="nav-item">
             <a href="{{ url('penyakit') }}" class="nav-link">
               <i class="nav-icon fas fa-columns text-light"></i>

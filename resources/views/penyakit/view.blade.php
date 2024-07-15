@@ -67,7 +67,7 @@
                                     <?php $noUrut++; ?>
                                     <tr>
                                         <td>{{ $noUrut }}</td>
-                                        <td>{{ $row->nama_gejala }}</td>
+                                        <td>{{ $row->gejala }}</td>
                                         <td>{{ $row->nama_penyakit }}</td>
                                         <td>{{ $row->definisi }}</td>
                                         <td>

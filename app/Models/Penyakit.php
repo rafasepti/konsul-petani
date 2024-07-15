@@ -10,7 +10,7 @@ class Penyakit extends Model
     // use HasFactory;
     protected $table = "penyakit";
     protected $primaryKey = 'id_penyakit';
-    protected $fillable = ['id_penyakit','nama_penyakit','definisi','id_gejala'];
+    protected $fillable = ['id_penyakit','nama_penyakit','definisi','gejala'];
 
     public function gejala()
     {

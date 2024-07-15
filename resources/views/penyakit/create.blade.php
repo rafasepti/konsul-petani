@@ -51,14 +51,9 @@
                       <!-- Awal Dari Input Form -->
                       <form action="{{ url('/penyakit/store') }}" method="post">
                           @csrf
-                          <input class="form-control form-control-solid" id="id_penyakit" name="id_penyakit" type="hidden">
                           
                           <div class="mb-3"><label for="namagejalalabel">Nama Gejala</label>
-                            <select class="form-control form-control-solid" id="id_gejala" name="id_gejala" aria-label="Default select example">
-                              @foreach ($gejala as $k)
-                                <option value="{{$k->id_gejala}}">{{$k->nama_gejala}}</option>
-                              @endforeach
-                            </select>
+                            <input class="form-control form-control-solid" id="gejala" name="gejala" type="text" value="{{old('gejala')}}">
                           </div>
 
                           <div class="mb-3"><label for="namapenyakitlabel">Nama Penyakit</label>

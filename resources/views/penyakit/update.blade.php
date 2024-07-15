@@ -54,19 +54,7 @@
                             <input class="form-control form-control-solid" type="hidden" name="id_penyakit" value="{{ $penyakit->id_penyakit }}">
                             
                             <div class="mb-3"><label for="namagejalalabel">Nama Gejala</label>
-                            <select class="form-control form-control-solid" id="id_gejala" name="id_gejala" aria-label="Default select example">
-                                
-                                {{-- <option value="{{$k->id_gejala}}">{{$k->nama_gejala}}</option> --}}
-                                @foreach ($gejala_cek as $cek)
-                                  @foreach ($gejala as $gj)
-                                    @if (old('id_gejala', $cek->id_gejala) == $gj->id_gejala)
-                                      <option value="{{ $gj->id_gejala }}" selected>{{ $gj->nama_gejala }}</option>
-                                    @else 
-                                      <option value="{{ $gj->id_gejala }}">{{ $gj->nama_gejala }}</option>
-                                    @endif
-                                  @endforeach
-                                @endforeach
-                            </select>
+                              <input class="form-control form-control-solid" id="gejala" name="gejala" type="text" value="{{ $penyakit->gejala }}">
                             </div>
 
                             <div class="mb-3"><label for="namapenyakitlabel">Nama Penyakit</label>
@@ -74,7 +62,7 @@
                             </div>
 
                             <div class="mb-3"><label for="definidilabel">Definisi</label>
-                              <textarea class="form-control form-control-solid" id="definisi" name="definisi" value="{{ $penyakit->definisi }}"></textarea>
+                              <textarea class="form-control form-control-solid" id="definisi" name="definisi">{{ $penyakit->definisi }}</textarea>
                             </div>
 
                             <!-- untuk tombol simpan -->
