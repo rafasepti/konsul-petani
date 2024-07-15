@@ -19,6 +19,30 @@ class OnBoardingConversation extends Conversation
 
     protected $email;
 
+    protected $type;
+    protected $query;
+
+    public function __construct($type = null, $query = null)
+    {
+        $this->type = $type;
+        $this->query = $query;
+    }
+
+    public function run()
+    {
+        if ($this->type === 'definisi') {
+            $this->giveDefinition($this->query);
+        } elseif ($this->type === 'solusi') {
+            $this->giveSolution($this->query);
+        } elseif ($this->type === 'gejala') {
+            $this->giveGejala($this->query);
+        } elseif ($this->type === 'pakar') {
+            $this->sendLinkButton();
+        } else {
+            $this->say('Maaf, data tidak ditemukan silakan tanya yang lain.');
+        }
+    }
+
     public function askFirstname()
     {
         $this->ask('Hello! What is your firstname?', function(Answer $answer) {
@@ -38,22 +62,6 @@ class OnBoardingConversation extends Conversation
 
             $this->say('Great - that is all we need, '.$this->firstname);
             $this->askFirstname();
-        });
-    }
-    public function run()
-    {
-        $this->ask('Apakah Anda ingin mencari definisi atau solusi? Ketik "definisi" atau "solusi". Ketik "pakar" untuk mendapat nomer pakar ', function ($answer) {
-            $choice = strtolower($answer->getText());
-
-            if ($choice == 'definisi' || $choice == 'Definisi') {
-                $this->askForDefinition();
-            } elseif ($choice == 'solusi' || $choice == 'Solusi') {
-                $this->askForSolution();
-            } elseif ($choice == 'pakar' || $choice == 'Pakar') {
-                $this->sendLinkButton();
-            } else {
-                $this->say('Pilihan tidak valid. Silakan ketik "definisi", "solusi" atau "pakar".');
-            }
         });
     }
 
@@ -87,27 +95,16 @@ class OnBoardingConversation extends Conversation
         foreach ($keywords as $keyword) {
             $penyakit = Penyakit::where('nama_penyakit', 'like', '%' . $keyword . '%')->first();
             if ($penyakit) {
+                $question = $this->type.' '. $penyakit->nama_penyakit;
                 $response = 'Definisi ' . $penyakit->nama_penyakit . ': ' . $penyakit->definisi;
                 $this->say($response);
-                $this->store($response, $definisi, $penyakit->id_penyakit);
+                $this->store($response, $question, $penyakit->id_penyakit);
                 return;
             }
         }
     
         // Jika tidak ditemukan
         $this->say('Maaf, definisi untuk penyakit tersebut tidak ditemukan.');
-    }
-
-    public function store($answer, $question, $id_penyakit){
-        DB::table('pertanyaan')->insert([
-            'pertanyaan' => $question,
-            'jawaban' => $answer,
-            'id_penyakit' => $id_penyakit,
-            'id_petani' => Auth::id(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-        //$this->say('data berhasil dimasukan ke db '. $answer.' ' .$question. ' '.$id_penyakit. ' '. Auth::id());
     }
 
     public function giveSolution($solusi)
@@ -120,14 +117,48 @@ class OnBoardingConversation extends Conversation
                 $query->where('nama_penyakit', 'like', '%' . $keyword . '%');
             })->first();
             if ($penyakitSolusi) {
+                $question = $this->type.' '. $penyakitSolusi->penyakit->nama_penyakit;
                 $response = 'Solusi untuk ' . $penyakitSolusi->penyakit->nama_penyakit . ': ' . $penyakitSolusi->solusi;
                 $this->say($response);
-                $this->store($response, $solusi, $penyakitSolusi->id_penyakit);
+                $this->store($response, $question, $penyakitSolusi->id_penyakit);
                 return; // Keluar setelah menemukan definisi
             }
         }
 
         // Jika tidak ditemukan
         $this->say('Maaf, solusi untuk penyakit tersebut tidak ditemukan.');
+    }
+
+    public function giveGejala($gejala)
+    {
+        // Pisahkan input menjadi kata-kata terpisah
+        $keywords = explode(' ', $gejala);
+    
+        // Cari setiap kata dalam database
+        foreach ($keywords as $keyword) {
+            $penyakit = Penyakit::where('nama_penyakit', 'like', '%' . $keyword . '%')->first();
+            if ($penyakit) {
+                $question = $this->type.' '. $penyakit->nama_penyakit;
+                $response = 'Gejala ' . $penyakit->nama_penyakit . ': ' . $penyakit->gejala;
+                $this->say($response);
+                $this->store($response, $question, $penyakit->id_penyakit);
+                return;
+            }
+        }
+    
+        // Jika tidak ditemukan
+        $this->say('Maaf, gejala untuk penyakit tersebut tidak ditemukan.');
+    }
+
+    public function store($answer, $question, $id_penyakit){
+        DB::table('pertanyaan')->insert([
+            'pertanyaan' => $question,
+            'jawaban' => $answer,
+            'id_penyakit' => $id_penyakit,
+            'id_petani' => Auth::id(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        //$this->say('data berhasil dimasukan ke db '. $answer.' ' .$question. ' '.$id_penyakit. ' '. Auth::id());
     }
 }
